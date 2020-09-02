@@ -33,6 +33,10 @@ server.get("/:user", (req, res) => {
   res.send(User.find(username));
 });
 
+server.get("/", (req, res) => {
+  res.send("Hello");
+});
+
 // CREATE NEW USER
 server.post("/newUser", (req, res) => {
   let newUser = new User();
