@@ -1,0 +1,18 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Server for our full-stack JS app that interfaces with the OpenBrewery API",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Everett Strunk, Andrew Szymanek, Andrew Nickerl",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mongodb": "^3.6.0",
+    "mongoose": "^5.10.2"
+  }
+}
