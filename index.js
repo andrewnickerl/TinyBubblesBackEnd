@@ -23,9 +23,9 @@ function saveUser(user) {
 }
 
 // GET ALL
-server.get("/", (req, res) => {
-  res.send(User.find());
-});
+// server.get("/", (req, res) => {
+//   res.send(User.find());
+// });
 
 // GET USER WITH SPECIFIED USERNAME
 server.get("/:user", (req, res) => {
