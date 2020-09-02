@@ -7,7 +7,10 @@ const dbConnStr =
   "mongodb+srv://dbUser:Password123@cluster0.uxrjs.mongodb.net/tiny-bubbles?retryWrites=true&w=majority";
 let PORT = process.env.PORT || 3000;
 
-mongoose.connect(dbConnStr, { useNewUrlParser: true });
+mongoose.connect(dbConnStr, {
+  useUnifiedTopology: true,
+  useNewUrlParser: true,
+});
 
 const db = mongoose.connection;
 db.once("open", () => {
@@ -23,18 +26,18 @@ function saveUser(user) {
 }
 
 // GET ALL
-// server.get("/", (req, res) => {
-//   res.send(User.find());
-// });
+server.get("/", (req, res) => {
+  User.find().then((users) => {
+    res.send(users);
+  });
+});
 
 // GET USER WITH SPECIFIED USERNAME
 server.get("/:user", (req, res) => {
   let username = req.params.user;
-  res.send(User.find(username));
-});
-
-server.get("/", (req, res) => {
-  res.send("Hello");
+  User.find({ userName: username }).then((user) => {
+    res.send(user);
+  });
 });
 
 // CREATE NEW USER
@@ -52,7 +55,7 @@ server.post("/newUser", (req, res) => {
 
 // EDIT USER
 server.put("/editProfile/:user", (req, res) => {
-  let user = User.findOneAndUpdate(
+  User.findOneAndUpdate(
     { userName: req.params.user },
     {
       fName: req.body.fName,
@@ -60,39 +63,45 @@ server.put("/editProfile/:user", (req, res) => {
       userName: req.body.username,
       password: req.body.password,
     }
-  );
+  ).then((user) => {
+    console.log(user);
+    res.send("User edit succesful");
+  });
 
-  res.send(`User edit successful`);
+  res.send();
 });
 
 // ADD TO FAVORITES
 server.put("/addFavorite", (req, res) => {
-  let user = User.findOneAndUpdate(
+  User.update(
     { userName: req.params.user },
-    { favoritesList: favoritesList.push(req.body.brewery) }
-  );
-
-  res.send(`${req.body.brewery} successfully added to favorites list`);
+    {
+      $push: { favoritesList: req.body.name },
+    }
+  ).then((fav) => {
+    res.send("Added successfully");
+  });
 });
 
 // REMOVE FROM FAVORITES
 server.put("/removeFavorite", (req, res) => {
-  let user = User.findOneAndUpdate(
+  User.findOneAndUpdate(
     { userName: req.params.user },
     {
-      favoritesList: favoritesList.filter(
-        (favs) => favs.name !== req.body.brewery
-      ),
+      $pull: { favoritesList: (rem) => rem.name === req.body.name },
     }
-  );
+  ).then(() => {
+    res.send("Removed from favorites");
+  });
 
   res.send(`${req.body.brewery} has been removed from favorites`);
 });
 
 // DELETE USER
-server.delete("/deleteUser", (req, res) => {
-  let user = User.findOneAndDelete({ userName: req.params.user });
-  res.send(`User deleted: ${req.params.user}`);
+server.delete("/deleteUser/:user", (req, res) => {
+  User.findOneAndDelete({ userName: req.params.user }).then(() => {
+    res.send(`${user.userName} successfully deleted`);
+  });
 });
 
 server.listen(PORT, () => {
