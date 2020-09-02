@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const User = require("./models/user");
 const server = express();
 const dbConnStr =
-  "mongodb+srv://dbUser:Password123@cluster0.uxrjs.mongodb.net/<dbname>?retryWrites=true&w=majority";
+  "mongodb+srv://dbUser:Password123@cluster0.uxrjs.mongodb.net/tiny-bubbles?retryWrites=true&w=majority";
 let PORT = process.env.PORT || 3000;
 
 mongoose.connect(dbConnStr, { useNewUrlParser: true });
