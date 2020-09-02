@@ -67,8 +67,7 @@ passport.use(
 server.post(
   "/login",
   passport.authenticate("local", {
-    successRedirect: `/profile/${req.user.username}`,
-    failureRedirect: "/login",
+    successRedirect: `/loggedIn`,
     failureFlash: true,
   })
 );
