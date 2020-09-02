@@ -2,10 +2,27 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const User = require("./models/user");
+const session = require("express-session");
+const passport = require("passport"),
+  LocalStrategy = require("passport-local").Strategy;
 const server = express();
 const dbConnStr =
   "mongodb+srv://dbUser:Password123@cluster0.uxrjs.mongodb.net/tiny-bubbles?retryWrites=true&w=majority";
 let PORT = process.env.PORT || 3000;
+
+// SERVER MIDDLE WARE USES
+server.use(bodyParser.json());
+server.use(bodyParser.urlencoded({ extended: false }));
+server.use(
+  session({
+    secret: "keyboard cat",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true },
+  })
+);
+server.use(passport.initialize());
+server.use(passport.session());
 
 mongoose.connect(dbConnStr, {
   useUnifiedTopology: true,
@@ -25,6 +42,48 @@ function saveUser(user) {
   return u.save();
 }
 
+// CONFIGURE PASSPORT LOGIN STRATEGY
+passport.use(
+  new LocalStrategy((username, password, done) => {
+    User.findOne({ userName: username }, (err, user) => {
+      if (err) {
+        return done(err);
+      }
+      if (!user) {
+        return done(null, false, { message: "Username does not exist" });
+      }
+      if (!user.validPassword(password)) {
+        return done(null, false, {
+          message: "Incorrect username/password combination",
+        });
+      }
+
+      return done(null, user);
+    });
+  })
+);
+
+// AUTHENTICATION VIA PASSPORT
+server.post(
+  "/login",
+  passport.authenticate("local", {
+    successRedirect: `/profile/${req.user.username}`,
+    failureRedirect: "/login",
+    failureFlash: true,
+  })
+);
+
+// SERIALIZE/DESERIALIZE PASSPORT SESSION
+passport.serializeUser(function (user, done) {
+  done(null, user.id);
+});
+
+passport.deserializeUser(function (id, done) {
+  User.findById(id, function (err, user) {
+    done(err, user);
+  });
+});
+
 // GET ALL
 server.get("/", (req, res) => {
   User.find().then((users) => {
@@ -32,7 +91,7 @@ server.get("/", (req, res) => {
   });
 });
 
-// GET USER WITH SPECIFIED USERNAME
+// GET A SPECIFIC USER
 server.get("/:user", (req, res) => {
   let username = req.params.user;
   User.find({ userName: username }).then((user) => {
@@ -54,9 +113,9 @@ server.post("/newUser", (req, res) => {
 });
 
 // EDIT USER
-server.put("/editProfile/:user", (req, res) => {
+server.put("/editProfile/", (req, res) => {
   User.findOneAndUpdate(
-    { userName: req.params.user },
+    { userName: req.user.userName },
     {
       fName: req.body.fName,
       lName: req.body.lName,
@@ -74,7 +133,7 @@ server.put("/editProfile/:user", (req, res) => {
 // ADD TO FAVORITES
 server.put("/addFavorite", (req, res) => {
   User.update(
-    { userName: req.params.user },
+    { userName: req.user.userName },
     {
       $push: { favoritesList: req.body.name },
     }
