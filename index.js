@@ -63,10 +63,13 @@ passport.use(
 // AUTHENTICATION VIA PASSPORT
 server.post(
   "/login",
-  passport.authenticate("local", {
-    successRedirect: "/loggedIn",
-    failureFlash: true,
-  })
+  (req, res) => {
+    res.send("working");
+  }
+  // passport.authenticate("local", {
+  //   successRedirect: "/loggedIn",
+  //   failureFlash: true,
+  // })
 );
 
 // SERIALIZE/DESERIALIZE PASSPORT SESSION
