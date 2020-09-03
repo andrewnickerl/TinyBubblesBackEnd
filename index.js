@@ -92,7 +92,7 @@ server.get("/", (req, res) => {
 
 // GET A SPECIFIC USER
 server.get("/user", (req, res) => {
-  res.send(findOne({ userName: req.user.userName });
+  res.send(findOne({ userName: req.user.userName }));
 });
 
 // CREATE NEW USER
@@ -141,7 +141,7 @@ server.put("/addFavorite", (req, res) => {
 // REMOVE FROM FAVORITES
 server.put("/removeFavorite", (req, res) => {
   User.findOneAndUpdate(
-    { userName: req.params.user },
+    { userName: req.user.userName },
     {
       $pull: { favoritesList: (rem) => rem.name === req.body.name },
     }
