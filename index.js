@@ -5,6 +5,8 @@ const User = require("./models/user");
 const session = require("express-session");
 const passport = require("passport"),
   LocalStrategy = require("passport-local").Strategy;
+const flash = require("connect-flash");
+
 const server = express();
 const dbConnStr =
   "mongodb+srv://dbUser:Password123@cluster0.uxrjs.mongodb.net/tiny-bubbles?retryWrites=true&w=majority";
@@ -13,6 +15,7 @@ let PORT = process.env.PORT || 3000;
 // SERVER MIDDLE WARE USES
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: false }));
+server.use(flash());
 server.use(
   session({
     secret: "keyboard cat",
