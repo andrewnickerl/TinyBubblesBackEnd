@@ -62,15 +62,19 @@ passport.use(
 
 // AUTHENTICATION VIA PASSPORT
 server.post("/login", (req, res, next) => {
+  console.log(req.body);
   passport.authenticate("local", (err, user) => {
     if (err) {
+      console.log(err);
       return next(err);
     }
+    console.log(user);
     if (!user) {
       return res.redirect("/");
     }
     req.logIn(user, function (err) {
       if (err) {
+        console.log(err);
         return next(err);
       }
       return res.redirect("/loggedIn");
