@@ -67,7 +67,7 @@ passport.use(
 server.post(
   "/login",
   passport.authenticate("local", {
-    successRedirect: `/loggedIn`,
+    successRedirect: "/loggedIn",
     failureFlash: true,
   })
 );
@@ -91,11 +91,8 @@ server.get("/", (req, res) => {
 });
 
 // GET A SPECIFIC USER
-server.get("/:user", (req, res) => {
-  let username = req.params.user;
-  User.find({ userName: username }).then((user) => {
-    res.send(user);
-  });
+server.get("/user", (req, res) => {
+  res.send(findOne({ userName: req.user.userName });
 });
 
 // CREATE NEW USER
