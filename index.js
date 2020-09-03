@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const User = require("./models/user");
 const session = require("express-session");
+const connectEnsureLogin = require("connect-ensure-login");
 const passport = require("passport"),
   LocalStrategy = require("passport-local").Strategy;
 const flash = require("connect-flash");
@@ -40,58 +41,84 @@ db.on("error", (err) => {
   console.error("Connection error: ", err);
 });
 // CONFIGURE PASSPORT LOGIN STRATEGY
-passport.use(
-  new LocalStrategy((username, password, done) => {
-    User.findOne({ userName: username }, (err, user) => {
-      if (err) {
-        return done(err);
-      }
-      if (!user) {
-        return done(null, false, { message: "Username does not exist" });
-      }
-      if (!user.validPassword(password)) {
-        return done(null, false, {
-          message: "Incorrect username/password combination",
-        });
-      }
+passport.use(User.createStrategy());
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
-      return done(null, user);
-    });
-  })
-);
+// // SERIALIZE/DESERIALIZE PASSPORT SESSION
+// passport.serializeUser(function (user, done) {
+//   done(null, user.id);
+// });
+
+// passport.deserializeUser(function (id, done) {
+//   User.findById(id, function (err, user) {
+//     done(err, user);
+//   });
+// });
+
+// passport.use(
+//   new LocalStrategy((username, password, done) => {
+//     User.findOne({ userName: username }, (err, user) => {
+//       if (err) {
+//         return done(err);
+//       }
+//       if (!user) {
+//         return done(null, false, { message: "Username does not exist" });
+//       }
+//       if (!user.validPassword(password)) {
+//         return done(null, false, {
+//           message: "Incorrect username/password combination",
+//         });
+//       }
+
+//       return done(null, user);
+//     });
+//   })
+// );
 
 // AUTHENTICATION VIA PASSPORT
 server.post("/login", (req, res, next) => {
-  passport.authenticate("local", (err, user) => {
-    console.log("str");
+  passport.authenticate("local", (err, user, info) => {
     if (err) {
       console.log(err);
       return next(err);
     }
-    console.log(user);
+
     if (!user) {
-      return res.redirect("/");
+      return res.redirect("/TinyBubblesFrontEnd/register");
     }
+
     req.logIn(user, function (err) {
       if (err) {
         console.log(err);
         return next(err);
       }
-      return res.redirect("/loggedIn");
+      console.log(user);
+      return res.redirect("/TinyBubblesFrontEnd/loggedIn");
     });
-  });
+  })(req, res, next);
 });
 
-// SERIALIZE/DESERIALIZE PASSPORT SESSION
-passport.serializeUser(function (user, done) {
-  done(null, user.id);
-});
-
-passport.deserializeUser(function (id, done) {
-  User.findById(id, function (err, user) {
-    done(err, user);
-  });
-});
+// server.post("/login", (req, res, next) => {
+//   passport.authenticate("local", (err, user) => {
+//     console.log("str");
+//     if (err) {
+//       console.log(err);
+//       return next(err);
+//     }
+//     console.log(user);
+//     if (!user) {
+//       return res.redirect("/");
+//     }
+//     req.logIn(user, function (err) {
+//       if (err) {
+//         console.log(err);
+//         return next(err);
+//       }
+//       return res.redirect("/loggedIn");
+//     });
+//   });
+// });
 
 // GET ALL
 server.get("/", (req, res) => {
