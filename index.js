@@ -86,11 +86,11 @@ server.post("/newUser", (req, res) => {
   User.register(
     {
       username: req.body.username,
+      password: req.body.password,
       fName: req.body.fName,
       lName: req.body.lName,
       favoritesList: [],
     },
-    req.body.password,
     (err, user) => {
       if (err) {
         console.log(err);
