@@ -106,6 +106,7 @@ server.post("/newUser", (req, res) => {
       });
     }
   );
+  res.send("User created successfully");
 });
 
 // EDIT USER
