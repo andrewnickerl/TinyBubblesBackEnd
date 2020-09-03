@@ -103,8 +103,6 @@ server.post("/newUser", (req, res) => {
           console.log(err);
         }
         console.log(result);
-
-        res.send({ id: req.user.id });
       });
     }
   );
