@@ -103,11 +103,11 @@ server.post("/newUser", (req, res) => {
           console.log(err);
         }
         console.log(result);
+
+        res.send({ id: req.user.id });
       });
     }
   );
-
-  res.send({ id: req.user.id });
 });
 
 // EDIT USER
