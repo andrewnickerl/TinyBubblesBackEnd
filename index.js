@@ -107,7 +107,7 @@ server.post("/newUser", (req, res) => {
     }
   );
 
-  res.send("User creation successful");
+  res.send({ id: req.user.id });
 });
 
 // EDIT USER
