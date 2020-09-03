@@ -85,6 +85,7 @@ server.post("/login", (req, res, next) => {
     }
 
     if (!user) {
+      console.log(info);
       return res.redirect("/TinyBubblesFrontEnd/register");
     }
 
