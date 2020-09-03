@@ -91,7 +91,7 @@ server.post("/newUser", (req, res) => {
   newUser.password = req.body.password;
   newUser.favoritesList = [];
   User.register(
-    { userName: newUser.userName, active: false },
+    { username: newUser.userName, active: false },
     newUser.password,
     (err, user) => {
       if (err) {
