@@ -62,8 +62,8 @@ passport.use(
 
 // AUTHENTICATION VIA PASSPORT
 server.post("/login", (req, res, next) => {
-  console.log(req.body);
   passport.authenticate("local", (err, user) => {
+    console.log("str");
     if (err) {
       console.log(err);
       return next(err);
