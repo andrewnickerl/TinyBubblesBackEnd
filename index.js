@@ -64,7 +64,7 @@ server.post("/login", (req, res, next) => {
         return next(err);
       }
       console.log(user);
-      return res.redirect("/loggedIn");
+      return res.send({ id: req.user.id });
     });
   })(req, res, next);
 });
