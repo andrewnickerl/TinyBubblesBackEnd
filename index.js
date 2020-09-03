@@ -97,7 +97,13 @@ server.post("/newUser", (req, res) => {
   newUser.userName = req.body.username;
   newUser.password = req.body.password;
   newUser.favoritesList = [];
-  newUser.save();
+  newUser.save((err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log(result);
+    }
+  });
 
   res.send(`User creation successful: ${newUser}`);
 });
