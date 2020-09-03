@@ -45,37 +45,6 @@ passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-// // SERIALIZE/DESERIALIZE PASSPORT SESSION
-// passport.serializeUser(function (user, done) {
-//   done(null, user.id);
-// });
-
-// passport.deserializeUser(function (id, done) {
-//   User.findById(id, function (err, user) {
-//     done(err, user);
-//   });
-// });
-
-// passport.use(
-//   new LocalStrategy((username, password, done) => {
-//     User.findOne({ userName: username }, (err, user) => {
-//       if (err) {
-//         return done(err);
-//       }
-//       if (!user) {
-//         return done(null, false, { message: "Username does not exist" });
-//       }
-//       if (!user.validPassword(password)) {
-//         return done(null, false, {
-//           message: "Incorrect username/password combination",
-//         });
-//       }
-
-//       return done(null, user);
-//     });
-//   })
-// );
-
 // AUTHENTICATION VIA PASSPORT
 server.post("/login", (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
@@ -100,27 +69,6 @@ server.post("/login", (req, res, next) => {
   })(req, res, next);
 });
 
-// server.post("/login", (req, res, next) => {
-//   passport.authenticate("local", (err, user) => {
-//     console.log("str");
-//     if (err) {
-//       console.log(err);
-//       return next(err);
-//     }
-//     console.log(user);
-//     if (!user) {
-//       return res.redirect("/");
-//     }
-//     req.logIn(user, function (err) {
-//       if (err) {
-//         console.log(err);
-//         return next(err);
-//       }
-//       return res.redirect("/loggedIn");
-//     });
-//   });
-// });
-
 // GET ALL
 server.get("/", (req, res) => {
   User.find().then((users) => {
@@ -142,6 +90,24 @@ server.post("/newUser", (req, res) => {
   newUser.userName = req.body.userName;
   newUser.password = req.body.password;
   newUser.favoritesList = [];
+  User.register(
+    { userName: newUser.userName, active: false },
+    newUser.password,
+    (err, user) => {
+      if (err) {
+        console.log(err);
+      }
+      console.log(user);
+      var authenticate = User.authenticate();
+      authenticate(newUser.userName, newUser.password, (err, result) => {
+        if (err) {
+          console.log(err);
+        }
+        console.log(result);
+      });
+    }
+  );
+
   newUser.save((err, result) => {
     if (err) {
       console.log(err);
