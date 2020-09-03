@@ -78,7 +78,9 @@ server.get("/", (req, res) => {
 
 // GET A SPECIFIC USER
 server.get("/user/:username", (req, res) => {
-  res.send(User.findOne({ username: req.params.username }));
+  User.findOne({ username: req.params.username }).exec((err, user) => {
+    res.send(user);
+  });
 });
 
 // CREATE NEW USER
