@@ -91,6 +91,7 @@ server.get("/user", (req, res) => {
 
 // CREATE NEW USER
 server.post("/newUser", (req, res) => {
+  console.log(req.body);
   let newUser = new User();
   newUser.fName = req.body.fName;
   newUser.lName = req.body.lName;
