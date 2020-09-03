@@ -36,12 +36,6 @@ db.once("open", () => {
 db.on("error", (err) => {
   console.error("Connection error: ", err);
 });
-
-function saveUser(user) {
-  let u = new User(user);
-  return u.save();
-}
-
 // CONFIGURE PASSPORT LOGIN STRATEGY
 passport.use(
   new LocalStrategy((username, password, done) => {
@@ -103,7 +97,7 @@ server.post("/newUser", (req, res) => {
   newUser.userName = req.body.username;
   newUser.password = req.body.password;
   newUser.favoritesList = [];
-  saveUser(newUser);
+  newUser.save();
 
   res.send(`User creation successful: ${newUser}`);
 });
