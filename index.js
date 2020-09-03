@@ -61,16 +61,22 @@ passport.use(
 );
 
 // AUTHENTICATION VIA PASSPORT
-server.post(
-  "/login",
-  (req, res) => {
-    res.send("working");
-  }
-  // passport.authenticate("local", {
-  //   successRedirect: "/loggedIn",
-  //   failureFlash: true,
-  // })
-);
+server.post("/login", (req, res, next) => {
+  passport.authenticate("local", (err, user) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.redirect("/");
+    }
+    req.logIn(user, function (err) {
+      if (err) {
+        return next(err);
+      }
+      return res.redirect("/loggedIn");
+    });
+  });
+});
 
 // SERIALIZE/DESERIALIZE PASSPORT SESSION
 passport.serializeUser(function (user, done) {
