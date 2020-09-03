@@ -91,6 +91,7 @@ server.post("/newUser", (req, res) => {
       lName: req.body.lName,
       favoritesList: [],
     },
+    req.body.password,
     (err, user) => {
       if (err) {
         console.log(err);
