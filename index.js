@@ -62,7 +62,7 @@ server.post(
   "/login",
   passport.authenticate("local", {
     successRedirect: "/loggedIn",
-    failureFlash: true,
+    //failureFlash: true,
   })
 );
 
