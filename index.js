@@ -55,7 +55,7 @@ server.post("/login", (req, res, next) => {
 
     if (!user) {
       console.log(info);
-      return res.redirect("/TinyBubblesFrontEnd/register");
+      return res.redirect("/register");
     }
 
     req.logIn(user, function (err) {
@@ -64,7 +64,7 @@ server.post("/login", (req, res, next) => {
         return next(err);
       }
       console.log(user);
-      return res.redirect("/TinyBubblesFrontEnd/loggedIn");
+      return res.redirect("/loggedIn");
     });
   })(req, res, next);
 });
@@ -78,28 +78,26 @@ server.get("/", (req, res) => {
 
 // GET A SPECIFIC USER
 server.get("/user", (req, res) => {
-  res.send(findOne({ userName: req.user.userName }));
+  res.send(findOne({ username: req.user.username }));
 });
 
 // CREATE NEW USER
 server.post("/newUser", (req, res) => {
-  console.log(req.body);
-  let newUser = new User();
-  newUser.fName = req.body.fName;
-  newUser.lName = req.body.lName;
-  newUser.userName = req.body.userName;
-  newUser.password = req.body.password;
-  newUser.favoritesList = [];
   User.register(
-    { username: newUser.userName, active: false },
-    newUser.password,
+    {
+      username: req.body.username,
+      fName: req.body.fName,
+      lName: req.body.lName,
+      favoritesList: [],
+    },
+    req.body.password,
     (err, user) => {
       if (err) {
         console.log(err);
       }
       console.log(user);
       var authenticate = User.authenticate();
-      authenticate(newUser.userName, newUser.password, (err, result) => {
+      authenticate(req.body.username, req.body.password, (err, result) => {
         if (err) {
           console.log(err);
         }
@@ -108,25 +106,17 @@ server.post("/newUser", (req, res) => {
     }
   );
 
-  newUser.save((err, result) => {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log(result);
-    }
-  });
-
   res.send(`User creation successful: ${newUser}`);
 });
 
 // EDIT USER
 server.put("/editProfile/", (req, res) => {
   User.findOneAndUpdate(
-    { userName: req.user.userName },
+    { username: req.user.username },
     {
       fName: req.body.fName,
       lName: req.body.lName,
-      userName: req.body.username,
+      username: req.body.username,
       password: req.body.password,
     }
   ).then((user) => {
@@ -140,7 +130,7 @@ server.put("/editProfile/", (req, res) => {
 // ADD TO FAVORITES
 server.put("/addFavorite", (req, res) => {
   User.update(
-    { userName: req.user.userName },
+    { username: req.user.username },
     {
       $push: { favoritesList: req.body.name },
     }
@@ -152,7 +142,7 @@ server.put("/addFavorite", (req, res) => {
 // REMOVE FROM FAVORITES
 server.put("/removeFavorite", (req, res) => {
   User.findOneAndUpdate(
-    { userName: req.user.userName },
+    { username: req.user.username },
     {
       $pull: { favoritesList: (rem) => rem.name === req.body.name },
     }
@@ -165,8 +155,8 @@ server.put("/removeFavorite", (req, res) => {
 
 // DELETE USER
 server.delete("/deleteUser/:user", (req, res) => {
-  User.findOneAndDelete({ userName: req.params.user }).then(() => {
-    res.send(`${user.userName} successfully deleted`);
+  User.findOneAndDelete({ username: req.params.user }).then(() => {
+    res.send(`${user.username} successfully deleted`);
   });
 });
 
